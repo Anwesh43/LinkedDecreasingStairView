@@ -43,7 +43,7 @@ fun Canvas.drawDSNode(i : Int, scale : Float, paint : Paint) {
     save()
     translate(w / 2, gap * (i + 1))
     rotate(90f * sc2)
-    drawLine(-size, -size, size, -size, paint)
+    drawLine(-size, -size, -size + 2 * size * sc1, -size, paint)
     for (j in 0..(rects - 1)) {
         val sc : Float = sc1.divideScale(j, rects)
         save()
@@ -116,6 +116,50 @@ class DecreasingStairView(ctx : Context) : View(ctx) {
             if (animated) {
                 animated = false
             }
+        }
+    }
+
+    data class DSNode(var i : Int, val state : State = State()) {
+
+        private var next : DSNode? = null
+        private var prev : DSNode? = null
+
+        init {
+            addNeighbor()
+        }
+
+        fun addNeighbor() {
+            if (i < nodes - 1) {
+                next = DSNode(i + 1)
+                next?.prev = this
+            }
+        }
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            canvas.drawDSNode(i, state.scale, paint)
+            prev?.draw(canvas, paint)
+        }
+
+        fun update(cb : (Int, Float) -> Unit) {
+            state.update {
+                cb(i, it)
+            }
+        }
+
+        fun startUpdating(cb : () -> Unit) {
+            state.startUpdating(cb)
+        }
+
+        fun getNext(dir : Int, cb : () -> Unit) : DSNode {
+            var curr : DSNode? = prev
+            if (dir == 1) {
+                curr = next
+            }
+            if (curr != null) {
+                return curr
+            }
+            cb()
+            return this
         }
     }
 }
