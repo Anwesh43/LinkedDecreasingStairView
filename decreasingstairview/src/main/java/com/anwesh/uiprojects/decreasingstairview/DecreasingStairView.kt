@@ -208,4 +208,13 @@ class DecreasingStairView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+
+        fun create(activity : Activity) : DecreasingStairView {
+            val view : DecreasingStairView = DecreasingStairView(activity)
+            activity.setContentView(view)
+            return view
+        }
+    }
 }
