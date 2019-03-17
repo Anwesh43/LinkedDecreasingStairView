@@ -185,4 +185,26 @@ class DecreasingStairView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : DecreasingStairView) {
+
+        private val animator : Animator = Animator(view)
+        private val ds : DecreasingStair = DecreasingStair(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(backColor)
+            ds.draw(canvas, paint)
+            animator.animate {
+                ds.update {i, scl ->
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            ds.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
