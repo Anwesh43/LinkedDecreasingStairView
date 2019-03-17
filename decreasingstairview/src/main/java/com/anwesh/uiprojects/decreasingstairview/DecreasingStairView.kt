@@ -19,8 +19,9 @@ val scGap : Float = 0.05f
 val scDiv : Double = 0.51
 val strokeFactor : Int = 90
 val sizeFactor : Float = 2.9f
-val foreColor : Int = Color.parseColor("#4CAF50")
+val foreColor : Int = Color.parseColor("#4527A0")
 val backColor : Int = Color.parseColor("#BDBDBD")
+val delay : Long = 20
 
 fun Int.inverse() : Float = 1f / this
 fun Float.maxScale(i : Int, n : Int) : Float = Math.max(0f, this - i * n.inverse())
@@ -32,11 +33,11 @@ fun Float.updateValue(dir : Float, a : Int, b : Int) : Float = mirrorValue(a, b)
 fun Canvas.drawDSNode(i : Int, scale : Float, paint : Paint) {
     val w : Float = width.toFloat()
     val h : Float = height.toFloat()
-    val gap : Float = w / (nodes + 1)
+    val gap : Float = h / (nodes + 1)
     val size : Float = gap / sizeFactor
     val sc1 : Float = scale.divideScale(0, 2)
     val sc2 : Float = scale.divideScale(1, 2)
-    val xGap : Float = (2 * size) / sizeFactor
+    val xGap : Float = (2 * size * 0.9f) / rects
     paint.color = foreColor
     paint.strokeWidth = Math.min(w, h) / strokeFactor
     paint.strokeCap = Paint.Cap.ROUND
@@ -48,7 +49,10 @@ fun Canvas.drawDSNode(i : Int, scale : Float, paint : Paint) {
         val sc : Float = sc1.divideScale(j, rects)
         save()
         translate(-size + xGap * j, size)
-        drawRect(RectF(0f, -size + xGap * j, size * sc, 0f), paint)
+        paint.style = Paint.Style.STROKE
+        drawRect(RectF(0f, -2 * size * 0.9f + xGap * j, xGap * sc, 0f), paint)
+        paint.style = Paint.Style.FILL
+        drawRect(RectF(0f, -2 * size * 0.9f + xGap * j, xGap * sc, 0f), paint)
         restore()
     }
     restore()
@@ -98,7 +102,7 @@ class DecreasingStairView(ctx : Context) : View(ctx) {
             if (animated) {
                 cb()
                 try {
-                    Thread.sleep(50)
+                    Thread.sleep(delay)
                     view.invalidate()
                 } catch(ex : Exception) {
 
